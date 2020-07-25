@@ -1,0 +1,80 @@
+<p>Terve! Me täällä Lintubongausammattilaisten pro-internetsivustolla, joka on ollut olemassa jo vuodesta 2020 saakka, keräämmet jatkuvasti dataa uusista lintulajeista sekä ufohavannoista, sekä pyrimme kirjoittamaan havainnot auki infopaketteina.</p>
+
+<p>Jos haluat osallistua meidän maailmanlaajuiseen wikiprojektiimme, lähetä havaintosi <a href="http://dev.zurial.fi/lintubongaus/havaintolomake.php">Havaintolomakkeella</a> tai ota yhteyttä meihän savumerkein.</p>
+
+<p>Mikäli vastausta ei löydy tältä sivulta, voit kokeilla etsiä sitä Wikipediasta:</p>
+    
+    <div class="searchForm-container">
+
+      <img src="img/linnut/lintu1.svg" style="height:100px" alt="">
+
+      <form class="searchForm">
+        <input type="search" class="searchForm-input">
+        <div class="buttons">
+        <button type="submit" class="icon searchIcon">
+          <i class="material-icons">
+            search
+            </i>
+        </button>
+        <button href="https://en.wikipedia.org/wiki/Special:Random" target="_blank" rel="noopener" class="icon randomIcon">
+          <i class="material-icons">
+            shuffle
+            </i>
+          </button>
+      </form></div>
+
+    </div>
+
+    <section class="searchResults"></section>
+
+
+
+<script>
+ function handleSubmit(event) {
+    // prevent page from reloading when form is submitted
+  event.preventDefault();
+  // get the value of the input field
+  const input = document.querySelector('.searchForm-input').value;
+  // remove whitespace from the input
+  const searchQuery = input.trim();
+  // call `fetchResults` and pass it the `searchQuery`
+  fetchResults(searchQuery);
+}
+
+function fetchResults(searchQuery) {
+	  const endpoint = `https://en.wikipedia.org/w/api.php?action=query&list=search&prop=info&inprop=url&utf8=&format=json&origin=*&srlimit=20&srsearch=${searchQuery}`;
+  	fetch(endpoint)
+  		.then(response => response.json())
+  		.then(data => {
+  	  	const results = data.query.search;
+        displayResults(results);
+		})
+    .catch(() => console.log('An error occurred'));
+}
+
+function displayResults(results) {
+  // Store a reference to `.searchResults`
+  const searchResults = document.querySelector('.searchResults');
+  // Remove all child elements
+  searchResults.innerHTML = '';
+  // Loop over results array
+  results.forEach(result => {
+   const url = encodeURI(`https://en.wikipedia.org/wiki/${result.title}`);
+
+   searchResults.insertAdjacentHTML('beforeend',
+      `<div class="resultItem">
+        <h3 class="resultItem-title">
+          <a href="${url}" target="_blank" rel="noopener">${result.title}</a>
+        </h3>
+        <span class="resultItem-snippet">${result.snippet}</span><br>
+        <a href="${url}" class="resultItem-link" target="_blank" rel="noopener">${url}</a>
+      </div>`
+    );
+  });
+}
+
+const form = document.querySelector('.searchForm');
+form.addEventListener('submit', handleSubmit);
+</script>
+
+
